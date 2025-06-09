@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Check formatting
+      run: make fmt-check
     - name: Build Rust
       run: make build
     - name: Clippy
