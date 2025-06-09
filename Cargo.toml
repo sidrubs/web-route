@@ -1,6 +1,6 @@
 [package]
 name = "web-route"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Ergonomic web route construction, joining, and population for Rust web frameworks"
 license = "MIT"
