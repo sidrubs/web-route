@@ -131,6 +131,7 @@ impl fmt::Debug for WebRoute {
     }
 }
 
+#[cfg(feature = "serde")]
 impl Serialize for WebRoute {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -141,6 +142,7 @@ impl Serialize for WebRoute {
     }
 }
 
+#[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for WebRoute {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

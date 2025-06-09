@@ -22,3 +22,11 @@ axum-test = "17"
 fake = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
+
+[features]
+default = ["serde"]
+
+# Derives `serde::{Serialize, Deserialize}`.
+# `serde` is already present in the dependency tree. Adding this as a feature
+# in-case we can remove it in the future.
+serde = []
