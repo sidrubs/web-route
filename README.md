@@ -49,3 +49,7 @@ struct RouteParams {
 ## Potential Improvements
 
 - Enable compile-time validation of routes and parameters for even greater safety.
+
+## Prior Art
+
+- [`TypedPath`](https://docs.rs/axum-extra/latest/axum_extra/routing/trait.TypedPath.html): The [`axum-extra`](https://docs.rs/axum-extra/latest/axum_extra) crate provides the `TypedPath` trait with a `#[derive(TypedPath)]` implementation. It enables type-safe, compile-time-checked population of path parameters and returns a [`Uri`](https://docs.rs/http/latest/http/uri/struct.Uri.html) suitable for use in requests. However, it does not appear to offer a clean or ergonomic way to **compose or join** multiple routes.
