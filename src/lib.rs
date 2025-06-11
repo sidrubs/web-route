@@ -1,9 +1,10 @@
 #![doc = include_str!("../README.md")]
 
 pub mod error;
-mod segment;
+pub mod parameterized_route;
 mod to_segments;
 mod utils;
 pub mod web_route;
 
-pub use web_route::WebRoute;
+pub use parameterized_route::route::ParameterizedRoute;
+pub use web_route::route::WebRoute;

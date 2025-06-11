@@ -9,20 +9,23 @@ use axum::{
     response::{Html, Redirect},
     routing::get,
 };
-use web_route::WebRoute;
+use web_route::ParameterizedRoute;
 
 // Would be cool if we could make this able to be evaluated at compile time so
 // that this can be a const without `LazyCell`.
-const FOO_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/foo/{foo_id}"));
-const BAR_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/bar/{bar_id}"));
-const BAZ_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/baz/{bar_id}"));
+const FOO_ROUTE: LazyCell<ParameterizedRoute> =
+    LazyCell::new(|| ParameterizedRoute::new("/foo/{foo_id}"));
+const BAR_ROUTE: LazyCell<ParameterizedRoute> =
+    LazyCell::new(|| ParameterizedRoute::new("/bar/{bar_id}"));
+const BAZ_ROUTE: LazyCell<ParameterizedRoute> =
+    LazyCell::new(|| ParameterizedRoute::new("/baz/{bar_id}"));
 
 fn build_router() -> Router {
     // Using the `WebRoute` to define axum server routes.
     let nested_router = Router::new()
-        .route(&BAR_ROUTE.as_template_route(), get(bar_handler))
-        .route(&BAZ_ROUTE.as_template_route(), get(baz_handler));
-    let root_router = Router::new().nest(&FOO_ROUTE.as_template_route(), nested_router);
+        .route(&BAR_ROUTE.to_string(), get(bar_handler))
+        .route(&BAZ_ROUTE.to_string(), get(baz_handler));
+    let root_router = Router::new().nest(&FOO_ROUTE.to_string(), nested_router);
 
     root_router
 }
@@ -38,8 +41,9 @@ async fn bar_handler(Path(params): Path<RouteParams>) -> Redirect {
         // Using the `WebRoute` to populate the redirect route.
         &FOO_ROUTE
             .join(BAZ_ROUTE)
-            .as_populated_route(&params)
-            .unwrap(),
+            .to_web_route(&params)
+            .unwrap()
+            .to_string(),
     )
 }
 
