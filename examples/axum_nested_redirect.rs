@@ -9,13 +9,13 @@ use axum::{
     response::{Html, Redirect},
     routing::get,
 };
-use web_route::WebRoute;
+use web_route::FixedRoute;
 
 // Would be cool if we could make this able to be evaluated at compile time so
 // that this can be a const without `LazyCell`.
-const FOO_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/foo/{foo_id}"));
-const BAR_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/bar/{bar_id}"));
-const BAZ_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/baz/{bar_id}"));
+const FOO_ROUTE: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/foo/{foo_id}"));
+const BAR_ROUTE: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/bar/{bar_id}"));
+const BAZ_ROUTE: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/baz/{bar_id}"));
 
 fn build_router() -> Router {
     // Using the `WebRoute` to define axum server routes.
@@ -38,7 +38,7 @@ async fn bar_handler(Path(params): Path<RouteParams>) -> Redirect {
         // Using the `WebRoute` to populate the redirect route.
         &FOO_ROUTE
             .join(BAZ_ROUTE)
-            .as_populated_route(&params)
+            .as_evaluated_route(&params)
             .unwrap(),
     )
 }

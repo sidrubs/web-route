@@ -3,15 +3,15 @@
 use std::cell::LazyCell;
 
 use axum::{Json, Router, extract::Path, routing::get};
-use web_route::WebRoute;
+use web_route::FixedRoute;
 
 // Would be cool if we could make this able to be evaluated at compile time so
 // that this can be a const without `LazyCell`.
-const ROUTE_WITH_PATH: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/foo/{*path}"));
+const ROUTE_WITH_PATH: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/foo/{*path}"));
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 struct RouteParams {
-    path: WebRoute,
+    path: FixedRoute,
 }
 
 async fn route_handler(Path(params): Path<RouteParams>) -> Json<RouteParams> {
@@ -26,7 +26,7 @@ fn build_router() -> Router {
 async fn should_be_able_to_extract_a_web_route_with_axum_path_extractor() {
     // Arrange
     let path_params = RouteParams {
-        path: WebRoute::new("another/route"),
+        path: FixedRoute::new("another/route"),
     };
 
     let test_server = axum_test::TestServer::new(build_router()).unwrap();
@@ -35,7 +35,7 @@ async fn should_be_able_to_extract_a_web_route_with_axum_path_extractor() {
     let response = test_server
         .get(
             // Using `WebRoute` to build a route with the parameters populated.
-            &ROUTE_WITH_PATH.as_populated_route(&path_params).unwrap(),
+            &ROUTE_WITH_PATH.as_evaluated_route(&path_params).unwrap(),
         )
         .await;
 

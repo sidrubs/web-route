@@ -6,12 +6,12 @@ use std::cell::LazyCell;
 
 use axum::{Json, Router, extract::Path, routing::get};
 use fake::{Fake, Faker};
-use web_route::WebRoute;
+use web_route::FixedRoute;
 
 // Would be cool if we could make this able to be evaluated at compile time so
 // that this can be a const without `LazyCell`.
-const FOO_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/foo/{foo_id}"));
-const BAR_ROUTE: LazyCell<WebRoute> = LazyCell::new(|| WebRoute::new("/bar/{bar_id}"));
+const FOO_ROUTE: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/foo/{foo_id}"));
+const BAR_ROUTE: LazyCell<FixedRoute> = LazyCell::new(|| FixedRoute::new("/bar/{bar_id}"));
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, fake::Dummy)]
 struct RouteParams {
@@ -44,7 +44,7 @@ async fn should_be_able_to_generate_populated_route() {
             // Using `WebRoute` to build a route with the parameters populated.
             &FOO_ROUTE
                 .join(BAR_ROUTE)
-                .as_populated_route(&path_params)
+                .as_evaluated_route(&path_params)
                 .unwrap(),
         )
         .await;

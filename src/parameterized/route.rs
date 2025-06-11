@@ -3,15 +3,16 @@ use std::fmt;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{
-    error::WebRouteError, segment::Segment, to_segments::ToSegments, utils::struct_to_map,
+    error::WebRouteError, parameterized::segment::ParameterizedSegment,
+    to_segments::ToParameterizedSegments, utils::struct_to_map,
 };
 
 #[derive(Clone, PartialEq)]
-pub struct WebRoute {
-    segments: Vec<Segment>,
+pub struct ParameterizedRoute {
+    segments: Vec<ParameterizedSegment>,
 }
 
-impl WebRoute {
+impl ParameterizedRoute {
     /// Creates a new [`WebRoute`].
     ///
     /// # Examples
@@ -21,7 +22,7 @@ impl WebRoute {
     ///
     /// let route = WebRoute::new("/some/route/{param}");
     /// ```
-    pub fn new<R: ToSegments>(route: R) -> Self {
+    pub fn new<R: ToParameterizedSegments>(route: R) -> Self {
         Self {
             segments: route.to_segments(),
         }
@@ -40,7 +41,7 @@ impl WebRoute {
     ///
     /// assert_eq!(joined_route, route.join("/a/nested/route"))
     /// ```
-    pub fn join<R: ToSegments>(&self, route: R) -> Self {
+    pub fn join<R: ToParameterizedSegments>(&self, route: R) -> Self {
         Self {
             segments: [self.segments.clone(), route.to_segments()].concat(),
         }
@@ -63,7 +64,7 @@ impl WebRoute {
         let template_segments = self
             .segments
             .iter()
-            .map(Segment::to_template)
+            .map(ParameterizedSegment::to_template)
             .collect::<Vec<_>>();
 
         format!("/{}", template_segments.join("/"))
@@ -118,12 +119,12 @@ impl WebRoute {
         Ok(format!("/{}", populated_segments.join("/")))
     }
 
-    pub(crate) fn segments(&self) -> Vec<Segment> {
+    pub(crate) fn segments(&self) -> Vec<ParameterizedSegment> {
         self.segments.clone()
     }
 }
 
-impl fmt::Debug for WebRoute {
+impl fmt::Debug for ParameterizedRoute {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("WebRoute")
             .field(&self.as_template_route())
@@ -132,7 +133,7 @@ impl fmt::Debug for WebRoute {
 }
 
 #[cfg(feature = "serde")]
-impl Serialize for WebRoute {
+impl Serialize for ParameterizedRoute {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -143,12 +144,12 @@ impl Serialize for WebRoute {
 }
 
 #[cfg(feature = "serde")]
-impl<'de> Deserialize<'de> for WebRoute {
+impl<'de> Deserialize<'de> for ParameterizedRoute {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        Ok(WebRoute::new(s))
+        Ok(ParameterizedRoute::new(s))
     }
 }
