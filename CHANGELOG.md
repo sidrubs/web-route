@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/sidrubs/web-route/compare/v0.1.1...v0.2.0) - 2025-06-29
+
+### Added
+
+- Split out into WebRoute and ParameterizedRoutes ([#6](https://github.com/sidrubs/web-route/pull/6))
+
+### Other
+
+- Untrack Cargo.lock ([#4](https://github.com/sidrubs/web-route/pull/4))
+
 ## [0.1.1](https://github.com/sidrubs/web-route/compare/v0.1.0...v0.1.1) - 2025-06-09
 
 ### Added
