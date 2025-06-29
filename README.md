@@ -54,7 +54,7 @@ let deserialized = serde_json::from_str::<FooStruct>(&serialized).unwrap();
 assert_eq!(deserialized, foo_struct);
 ```
 
-One would use a [`ParameterizedRoute`] when defining routes used by a webserver (e.g. [`axum`](https://github.com/tokio-rs/axum))
+One would use a [`ParameterizedRoute`][] when defining routes used by a webserver (e.g. [`axum`](https://github.com/tokio-rs/axum))
 
 ```rust
 use web_route::ParameterizedRoute;
@@ -65,7 +65,7 @@ let bar = ParameterizedRoute::new("/bar/{bar_id}");
 assert_eq!(&foo.join(bar).to_string(), "/foo/{foo_id}/bar/{bar_id}");
 ```
 
-A [`ParameterizedRoute`] can be populated with values to produce a [`WebRoute`] which can then be used to make a request to the server route it defines.
+A [`ParameterizedRoute`][] can be populated with values to produce a [`WebRoute`] which can then be used to make a request to the server route it defines.
 
 ```rust
 use serde::{Serialize, Deserialize};
@@ -100,3 +100,6 @@ For more complete examples, see the [examples](https://github.com/sidrubs/web-ro
 ## Prior Art
 
 - [`TypedPath`](https://docs.rs/axum-extra/latest/axum_extra/routing/trait.TypedPath.html): The [`axum-extra`](https://docs.rs/axum-extra/latest/axum_extra) crate provides the `TypedPath` trait with a `#[derive(TypedPath)]` implementation. It enables type-safe, compile-time-checked population of path parameters and returns a [`Uri`](https://docs.rs/http/latest/http/uri/struct.Uri.html) suitable for use in requests. However, it does not appear to offer a clean or ergonomic way to **compose or join** multiple routes.
+
+[`WebRoute`]: ./src/web_route/route.rs
+[`ParameterizedRoute`]: ./src/parameterized_route/route.rs
