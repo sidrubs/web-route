@@ -14,7 +14,7 @@ help:
 # Development group
 .PHONY: build b
 build b:
-	cargo build
+	cargo build --all-targets
 
 .PHONY: test t
 test t:
@@ -22,7 +22,7 @@ test t:
 
 .PHONY: clippy lint
 clippy lint:
-	cargo clippy --all-features
+	cargo clippy --all-features --all-targets
 
 .PHONY: fmt
 fmt:

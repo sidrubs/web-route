@@ -117,6 +117,7 @@ impl fmt::Debug for ParameterizedRoute {
     }
 }
 
+/// Allows one to deref for usage with external crates. Makes for neater code.
 impl ops::Deref for ParameterizedRoute {
     type Target = str;
 

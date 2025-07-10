@@ -1,15 +1,15 @@
 //! Ensures that a [`WebRoute`] can be extracted by an `axum` [`Path`] path
 //! extractor.
 
-use std::cell::LazyCell;
+use std::sync::LazyLock;
 
 use axum::{Json, Router, extract::Path, routing::get};
 use web_route::{ParameterizedRoute, WebRoute};
 
 // Would be cool if we could make this able to be evaluated at compile time so
 // that this can be a const without `LazyCell`.
-const ROUTE_WITH_PATH: LazyCell<ParameterizedRoute> =
-    LazyCell::new(|| ParameterizedRoute::new("/foo/{*path}"));
+static ROUTE_WITH_PATH: LazyLock<ParameterizedRoute> =
+    LazyLock::new(|| ParameterizedRoute::new("/foo/{*path}"));
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 struct RouteParams {

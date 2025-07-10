@@ -1,7 +1,7 @@
 //! An example application that uses the same [`WebRoute`]s to define both an
 //! `axum` router and build out a populated redirect route.
 
-use std::cell::LazyCell;
+use std::sync::LazyLock;
 
 use axum::{
     Router,
@@ -12,22 +12,21 @@ use axum::{
 use web_route::ParameterizedRoute;
 
 // Would be cool if we could make this able to be evaluated at compile time so
-// that this can be a const without `LazyCell`.
-const FOO_ROUTE: LazyCell<ParameterizedRoute> =
-    LazyCell::new(|| ParameterizedRoute::new("/foo/{foo_id}"));
-const BAR_ROUTE: LazyCell<ParameterizedRoute> =
-    LazyCell::new(|| ParameterizedRoute::new("/bar/{bar_id}"));
-const BAZ_ROUTE: LazyCell<ParameterizedRoute> =
-    LazyCell::new(|| ParameterizedRoute::new("/baz/{bar_id}"));
+// that this can be a static without `LazyLock`.
+static FOO_ROUTE: LazyLock<ParameterizedRoute> =
+    LazyLock::new(|| ParameterizedRoute::new("/foo/{foo_id}"));
+static BAR_ROUTE: LazyLock<ParameterizedRoute> =
+    LazyLock::new(|| ParameterizedRoute::new("/bar/{bar_id}"));
+static BAZ_ROUTE: LazyLock<ParameterizedRoute> =
+    LazyLock::new(|| ParameterizedRoute::new("/baz/{bar_id}"));
 
 fn build_router() -> Router {
     // Using the `WebRoute` to define axum server routes.
     let nested_router = Router::new()
-        .route(&BAR_ROUTE.to_string(), get(bar_handler))
-        .route(&BAZ_ROUTE.to_string(), get(baz_handler));
-    let root_router = Router::new().nest(&FOO_ROUTE.to_string(), nested_router);
+        .route(&BAR_ROUTE, get(bar_handler))
+        .route(&BAZ_ROUTE, get(baz_handler));
 
-    root_router
+    Router::new().nest(&FOO_ROUTE, nested_router)
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -40,10 +39,9 @@ async fn bar_handler(Path(params): Path<RouteParams>) -> Redirect {
     Redirect::to(
         // Using the `WebRoute` to populate the redirect route.
         &FOO_ROUTE
-            .join(BAZ_ROUTE)
+            .join(BAZ_ROUTE.clone())
             .to_web_route(&params)
-            .unwrap()
-            .to_string(),
+            .unwrap(),
     )
 }
 
