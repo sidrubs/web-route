@@ -27,8 +27,8 @@ async fn route_handler(Path(params): Path<RouteParams>) -> Json<RouteParams> {
 
 fn build_router() -> Router {
     // Using the `WebRoute` to define axum server routes.
-    let nested_router = Router::new().route(&BAR_ROUTE.to_string(), get(route_handler));
-    let root_router = Router::new().nest(&FOO_ROUTE.to_string(), nested_router);
+    let nested_router = Router::new().route(&BAR_ROUTE, get(route_handler));
+    let root_router = Router::new().nest(&FOO_ROUTE, nested_router);
 
     root_router
 }
@@ -47,8 +47,7 @@ async fn should_be_able_to_generate_populated_route() {
             &FOO_ROUTE
                 .join(BAR_ROUTE)
                 .to_web_route(&path_params)
-                .unwrap()
-                .to_string(),
+                .unwrap(),
         )
         .await;
 

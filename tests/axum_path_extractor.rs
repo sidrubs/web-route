@@ -21,7 +21,7 @@ async fn route_handler(Path(params): Path<RouteParams>) -> Json<RouteParams> {
 }
 
 fn build_router() -> Router {
-    Router::new().route(&ROUTE_WITH_PATH.to_string(), get(route_handler))
+    Router::new().route(&ROUTE_WITH_PATH, get(route_handler))
 }
 
 #[tokio::test]
@@ -37,10 +37,7 @@ async fn should_be_able_to_extract_a_web_route_with_axum_path_extractor() {
     let response = test_server
         .get(
             // Using `WebRoute` to build a route with the parameters populated.
-            &ROUTE_WITH_PATH
-                .to_web_route(&path_params)
-                .unwrap()
-                .to_string(),
+            &ROUTE_WITH_PATH.to_web_route(&path_params).unwrap(),
         )
         .await;
 
