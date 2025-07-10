@@ -34,19 +34,19 @@ impl ToFixedSegments for String {
 
 impl ToFixedSegments for WebRoute {
     fn to_segments(&self) -> Vec<WebSegment> {
-        self.segments()
+        WebRoute::to_segments(self)
     }
 }
 
 impl ToFixedSegments for &WebRoute {
     fn to_segments(&self) -> Vec<WebSegment> {
-        self.segments()
+        WebRoute::to_segments(self)
     }
 }
 
 impl ToFixedSegments for LazyCell<WebRoute> {
     fn to_segments(&self) -> Vec<WebSegment> {
-        self.segments()
+        WebRoute::to_segments(self)
     }
 }
 
@@ -78,19 +78,19 @@ impl ToParameterizedSegments for String {
 
 impl ToParameterizedSegments for ParameterizedRoute {
     fn to_segments(&self) -> Vec<ParameterizedSegment> {
-        self.segments()
+        ParameterizedRoute::to_segments(self)
     }
 }
 
 impl ToParameterizedSegments for &ParameterizedRoute {
     fn to_segments(&self) -> Vec<ParameterizedSegment> {
-        self.segments()
+        ParameterizedRoute::to_segments(self)
     }
 }
 
 impl ToParameterizedSegments for LazyCell<ParameterizedRoute> {
     fn to_segments(&self) -> Vec<ParameterizedSegment> {
-        self.segments()
+        ParameterizedRoute::to_segments(self)
     }
 }
 

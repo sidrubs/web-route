@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, ops};
 
 use crate::{
     WebRoute, error::WebRouteError, parameterized_route::segment::ParameterizedSegment,
@@ -11,9 +11,7 @@ use crate::{
 /// which can be used to make requests against the webserver routes that the
 /// [`ParameterizedRoute`] was used to define.
 #[derive(Clone, PartialEq)]
-pub struct ParameterizedRoute {
-    segments: Vec<ParameterizedSegment>,
-}
+pub struct ParameterizedRoute(String);
 
 impl ParameterizedRoute {
     /// Creates a new [`ParameterizedRoute`].
@@ -26,9 +24,9 @@ impl ParameterizedRoute {
     /// let route = ParameterizedRoute::new("/some/route/{param}");
     /// ```
     pub fn new<R: ToParameterizedSegments>(route: R) -> Self {
-        Self {
-            segments: route.to_segments(),
-        }
+        let segments = route.to_segments();
+
+        Self(evaluate_segments(segments))
     }
 
     /// Joins a route onto an existing [`ParameterizedRoute`] returning the
@@ -46,9 +44,9 @@ impl ParameterizedRoute {
     /// assert_eq!(joined_route, route.join("/a/nested/route"))
     /// ```
     pub fn join<R: ToParameterizedSegments>(&self, route: R) -> Self {
-        Self {
-            segments: [self.segments.clone(), route.to_segments()].concat(),
-        }
+        let joined_segments = [self.to_segments(), route.to_segments()].concat();
+
+        Self(evaluate_segments(joined_segments))
     }
 
     /// Attempts to populate the parameters of the route with their `values` and
@@ -90,7 +88,7 @@ impl ParameterizedRoute {
         let values = struct_to_map(values).ok_or(WebRouteError::InvalidValue)?;
 
         let populated_segments = self
-            .segments
+            .to_segments()
             .iter()
             .map(|segment| segment.to_populated(&values))
             .collect::<Result<Vec<_>, _>>()?;
@@ -100,20 +98,14 @@ impl ParameterizedRoute {
         Ok(web_route)
     }
 
-    pub(crate) fn segments(&self) -> Vec<ParameterizedSegment> {
-        self.segments.clone()
+    pub(crate) fn to_segments(&self) -> Vec<ParameterizedSegment> {
+        ToParameterizedSegments::to_segments(&self.0)
     }
 }
 
 impl fmt::Display for ParameterizedRoute {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let template_segments = self
-            .segments
-            .iter()
-            .map(ParameterizedSegment::to_template)
-            .collect::<Vec<_>>();
-
-        write!(f, "/{}", template_segments.join("/"))
+        write!(f, "{}", self.0)
     }
 }
 
@@ -123,4 +115,22 @@ impl fmt::Debug for ParameterizedRoute {
             .field(&self.to_string())
             .finish()
     }
+}
+
+impl ops::Deref for ParameterizedRoute {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// Convert `segments` into their normalized [`String`] route representation.
+fn evaluate_segments(segments: Vec<ParameterizedSegment>) -> String {
+    let evaluated_segments = segments
+        .iter()
+        .map(ParameterizedSegment::to_template)
+        .collect::<Vec<_>>();
+
+    format!("/{}", evaluated_segments.join("/"))
 }

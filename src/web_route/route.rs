@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, ops};
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -7,9 +7,7 @@ use crate::{to_segments::ToFixedSegments, web_route::segment::WebSegment};
 /// Defines a route structure that can be safely joined, no matter the
 /// leading/trailing slash configuration or operating system.
 #[derive(Clone, PartialEq)]
-pub struct WebRoute {
-    segments: Vec<WebSegment>,
-}
+pub struct WebRoute(String);
 
 impl WebRoute {
     /// Creates a new [`WebRoute`].
@@ -22,9 +20,9 @@ impl WebRoute {
     /// let route = WebRoute::new("/some/route");
     /// ```
     pub fn new<R: ToFixedSegments>(route: R) -> Self {
-        Self {
-            segments: route.to_segments(),
-        }
+        let segments = route.to_segments();
+
+        Self(evaluate_segments(segments))
     }
 
     /// Joins a route onto an existing [`WebRoute`] returning the joined
@@ -42,25 +40,19 @@ impl WebRoute {
     /// assert_eq!(&joined_route.to_string(), "/some/route/a/nested/route")
     /// ```
     pub fn join<R: ToFixedSegments>(&self, route: R) -> Self {
-        Self {
-            segments: [self.segments.clone(), route.to_segments()].concat(),
-        }
+        let joined_segments = [self.to_segments(), route.to_segments()].concat();
+
+        Self(evaluate_segments(joined_segments))
     }
 
-    pub(crate) fn segments(&self) -> Vec<WebSegment> {
-        self.segments.clone()
+    pub(crate) fn to_segments(&self) -> Vec<WebSegment> {
+        ToFixedSegments::to_segments(&self.0)
     }
 }
 
 impl fmt::Display for WebRoute {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let evaluated_segments = self
-            .segments
-            .iter()
-            .map(|segment| segment.to_evaluated())
-            .collect::<Vec<_>>();
-
-        write!(f, "/{}", evaluated_segments.join("/"))
+        write!(f, "{}", self.0)
     }
 }
 
@@ -90,4 +82,23 @@ impl<'de> Deserialize<'de> for WebRoute {
         let s = String::deserialize(deserializer)?;
         Ok(WebRoute::new(s))
     }
+}
+
+/// Allows one to deref for usage with external crates. Makes for neater code.
+impl ops::Deref for WebRoute {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// Convert `segments` into their normalized [`String`] route representation.
+fn evaluate_segments(segments: Vec<WebSegment>) -> String {
+    let evaluated_segments = segments
+        .iter()
+        .map(|segment| segment.to_evaluated())
+        .collect::<Vec<_>>();
+
+    format!("/{}", evaluated_segments.join("/"))
 }
