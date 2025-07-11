@@ -9,8 +9,15 @@ impl WebSegment {
     }
 }
 
-impl From<&str> for WebSegment {
-    fn from(segment: &str) -> Self {
-        Self(segment.to_owned())
+/// It is often a path of insecure traversals if there are two consecutive slashes in a path. Making an empty [`WebSegment`] impossible to create removes the chance of consecutive slashes.
+impl TryFrom<&str> for WebSegment {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if value.is_empty() {
+            Err(())
+        } else {
+            Ok(Self(value.to_owned()))
+        }
     }
 }

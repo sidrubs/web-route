@@ -17,7 +17,8 @@ impl ToFixedSegments for &str {
         self.trim_start_matches("/")
             .trim_end_matches("/")
             .split("/")
-            .map(Into::into)
+            .map(TryInto::try_into)
+            .filter_map(|res| res.ok())
             .collect()
     }
 }
@@ -27,7 +28,8 @@ impl ToFixedSegments for String {
         self.trim_start_matches("/")
             .trim_end_matches("/")
             .split("/")
-            .map(Into::into)
+            .map(TryInto::try_into)
+            .filter_map(|res| res.ok())
             .collect()
     }
 }
@@ -67,7 +69,8 @@ impl ToParameterizedSegments for &str {
         self.trim_start_matches("/")
             .trim_end_matches("/")
             .split("/")
-            .map(Into::into)
+            .map(TryInto::try_into)
+            .filter_map(|res| res.ok())
             .collect()
     }
 }
@@ -77,7 +80,8 @@ impl ToParameterizedSegments for String {
         self.trim_start_matches("/")
             .trim_end_matches("/")
             .split("/")
-            .map(Into::into)
+            .map(TryInto::try_into)
+            .filter_map(|res| res.ok())
             .collect()
     }
 }
@@ -142,5 +146,63 @@ impl ToParameterizedSegments for LazyLock<WebRoute> {
             .into_iter()
             .map(Into::into)
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod to_fixed_segment_tests {
+    use crate::to_segments::ToFixedSegments;
+
+    #[test]
+    fn str_should_normalize_double_slashes() {
+        // Arrange
+        let non_normalized = "/foo//bar";
+
+        // Act
+        let segments = ToFixedSegments::to_segments(&non_normalized);
+
+        // Assert
+        assert_eq!(segments.len(), 2);
+    }
+
+    #[test]
+    fn string_should_normalize_double_slashes() {
+        // Arrange
+        let non_normalized = "/foo//bar".to_string();
+
+        // Act
+        let segments = ToFixedSegments::to_segments(&non_normalized);
+
+        // Assert
+        assert_eq!(segments.len(), 2);
+    }
+}
+
+#[cfg(test)]
+mod to_parameterized_segment_tests {
+    use crate::to_segments::ToParameterizedSegments;
+
+    #[test]
+    fn str_should_normalize_double_slashes() {
+        // Arrange
+        let non_normalized = "/foo//bar";
+
+        // Act
+        let segments = ToParameterizedSegments::to_segments(&non_normalized);
+
+        // Assert
+        assert_eq!(segments.len(), 2);
+    }
+
+    #[test]
+    fn string_should_normalize_double_slashes() {
+        // Arrange
+        let non_normalized = "/foo//bar".to_string();
+
+        // Act
+        let segments = ToParameterizedSegments::to_segments(&non_normalized);
+
+        // Assert
+        assert_eq!(segments.len(), 2);
     }
 }

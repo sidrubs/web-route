@@ -16,13 +16,13 @@ Most web frameworks define routes using `&str` templates (e.g. `"/foo/{param}"`)
 
 ## Usage
 
-One can create and join [`WebRoute`]s without having to worry about leading and trailing slash pedantics. The resulting routes will always have forward slash separators no matter the operating system.
+One can create and join [`WebRoute`]s without having to worry about leading and trailing slash pedantics. The resulting routes will always be normalized to have single forward slash separators no matter the operating system.
 
 ```rust
 use web_route::WebRoute;
 
 let foo = WebRoute::new("no/leading/slash/");
-let bar = WebRoute::new("/leading/and/trailing/slash/");
+let bar = WebRoute::new("/leading/and//trailing/slash/");
 
 // Can join `WebRoute`s.
 let joined_route = foo.join(bar);

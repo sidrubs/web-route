@@ -52,11 +52,18 @@ impl ParameterizedSegment {
     }
 }
 
-impl From<&str> for ParameterizedSegment {
-    fn from(segment: &str) -> Self {
+/// It is often a path of insecure traversals if there are two consecutive slashes in a path. Making an empty [`ParameterizedSegment`] impossible to create removes the chance of consecutive slashes.
+impl TryFrom<&str> for ParameterizedSegment {
+    type Error = ();
+
+    fn try_from(segment: &str) -> Result<Self, Self::Error> {
         let segment = segment.trim();
 
-        if segment.starts_with("{*") && segment.ends_with('}') {
+        if segment.is_empty() {
+            return Err(());
+        }
+
+        Ok(if segment.starts_with("{*") && segment.ends_with('}') {
             let param = segment.trim_start_matches("{*").trim_end_matches('}');
             ParameterizedSegment::CatchallParam(param.to_string())
         } else if segment.starts_with('{') && segment.ends_with('}') {
@@ -64,7 +71,7 @@ impl From<&str> for ParameterizedSegment {
             ParameterizedSegment::NamedParam(param.to_string())
         } else {
             ParameterizedSegment::Static(segment.to_string())
-        }
+        })
     }
 }
 
@@ -124,32 +131,41 @@ mod segment_tests {
         #[test]
         fn should_parse_named_parameter() {
             // Act
-            let segment = ParameterizedSegment::from("{named_param}");
+            let segment = ParameterizedSegment::try_from("{named_param}").unwrap();
 
             // Assert
             assert!(
                 matches!(segment, ParameterizedSegment::NamedParam(param) if param == "named_param")
-            )
+            );
         }
 
         #[test]
         fn should_parse_catchall_parameter() {
             // Act
-            let segment = ParameterizedSegment::from("{*catchall_param}");
+            let segment = ParameterizedSegment::try_from("{*catchall_param}").unwrap();
 
             // Assert
             assert!(
                 matches!(segment, ParameterizedSegment::CatchallParam(param) if param == "catchall_param")
-            )
+            );
         }
 
         #[test]
         fn should_parse_static_segment() {
             // Act
-            let segment = ParameterizedSegment::from("static");
+            let segment = ParameterizedSegment::try_from("static").unwrap();
 
             // Assert
-            assert!(matches!(segment, ParameterizedSegment::Static(value) if value == "static"))
+            assert!(matches!(segment, ParameterizedSegment::Static(value) if value == "static"));
+        }
+
+        #[test]
+        fn should_not_parse_empty_segment() {
+            // Act
+            let res = ParameterizedSegment::try_from("");
+
+            // Assert
+            assert!(res.is_err());
         }
     }
 }

@@ -135,3 +135,35 @@ fn evaluate_segments(segments: Vec<ParameterizedSegment>) -> String {
 
     format!("/{}", evaluated_segments.join("/"))
 }
+
+#[cfg(test)]
+mod parameterized_route_tests {
+    use super::*;
+
+    mod to_web_route {
+        use std::ops::Deref;
+
+        use super::*;
+
+        #[test]
+        fn should_normalize_double_forward_slashes() {
+            // Arrange
+            #[derive(serde::Serialize)]
+            struct RouteParams {
+                param: String,
+            }
+
+            let parameterized_route = ParameterizedRoute::new("/some/route/{param}");
+
+            // Act
+            let web_route = parameterized_route
+                .to_web_route(&RouteParams {
+                    param: "/value".to_owned(),
+                })
+                .unwrap();
+
+            // Assert
+            assert_eq!(web_route.deref(), "/some/route/value")
+        }
+    }
+}
