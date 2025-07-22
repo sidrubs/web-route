@@ -16,6 +16,9 @@ serde = "1"
 serde_json = "1"
 thiserror = "2"
 
+# `fake` feature deps
+fake = { version = "4", optional = true }
+
 [dev-dependencies]
 axum = "0.8"
 axum-test = "17"
@@ -24,7 +27,8 @@ serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 
 [features]
-default = ["serde"]
+default = ["serde", "fake"]
+fake = ["dep:fake"]
 
 # Derives `serde::{Serialize, Deserialize}`.
 # `serde` is already present in the dependency tree. Adding this as a feature

@@ -7,6 +7,7 @@ use crate::{error::WebRouteError, web_route::segment::WebSegment};
 /// Handles converting it between the templated representation of the segment,
 /// and the populated version.
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "fake", derive(fake::Dummy))]
 pub enum ParameterizedSegment {
     NamedParam(String),
     CatchallParam(String),

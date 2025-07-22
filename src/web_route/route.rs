@@ -93,6 +93,16 @@ impl ops::Deref for WebRoute {
     }
 }
 
+#[cfg(feature = "fake")]
+impl fake::Dummy<fake::Faker> for WebRoute {
+    fn dummy_with_rng<R: fake::Rng + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
+        use fake::Fake;
+
+        let segments: Vec<WebSegment> = config.fake_with_rng(rng);
+        Self::new(segments)
+    }
+}
+
 /// Convert `segments` into their normalized [`String`] route representation.
 fn evaluate_segments(segments: Vec<WebSegment>) -> String {
     let evaluated_segments = segments
