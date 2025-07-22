@@ -58,6 +58,13 @@ impl ToFixedSegments for LazyLock<WebRoute> {
     }
 }
 
+#[cfg(feature = "fake")]
+impl ToFixedSegments for Vec<WebSegment> {
+    fn to_segments(&self) -> Vec<WebSegment> {
+        self.clone()
+    }
+}
+
 pub trait ToParameterizedSegments {
     /// Defines how to convert something into a [`Vec`] of
     /// [`ParameterizedSegment`]s.
@@ -146,6 +153,13 @@ impl ToParameterizedSegments for LazyLock<WebRoute> {
             .into_iter()
             .map(Into::into)
             .collect()
+    }
+}
+
+#[cfg(feature = "fake")]
+impl ToParameterizedSegments for Vec<ParameterizedSegment> {
+    fn to_segments(&self) -> Vec<ParameterizedSegment> {
+        self.clone()
     }
 }
 

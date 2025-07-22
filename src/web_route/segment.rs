@@ -1,5 +1,6 @@
 /// Represents an individual segment of a route (i.e. the bit between the `/`).
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "fake", derive(fake::Dummy))]
 pub struct WebSegment(String);
 
 impl WebSegment {
