@@ -126,6 +126,12 @@ impl ops::Deref for ParameterizedRoute {
     }
 }
 
+impl AsRef<str> for ParameterizedRoute {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 #[cfg(feature = "fake")]
 impl fake::Dummy<fake::Faker> for ParameterizedRoute {
     fn dummy_with_rng<R: fake::Rng + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {

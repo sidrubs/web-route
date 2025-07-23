@@ -93,6 +93,12 @@ impl ops::Deref for WebRoute {
     }
 }
 
+impl AsRef<str> for WebRoute {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 #[cfg(feature = "fake")]
 impl fake::Dummy<fake::Faker> for WebRoute {
     fn dummy_with_rng<R: fake::Rng + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
