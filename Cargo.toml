@@ -17,12 +17,12 @@ serde_json = "1"
 thiserror = "2"
 
 # `fake` feature deps
-fake = { version = "4", optional = true, features = ["derive"] }
+fake = { version = "5", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 axum = "0.8"
 axum-test = "18"
-fake = { version = "4", features = ["derive"] }
+fake = { version = "5", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 
