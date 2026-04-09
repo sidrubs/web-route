@@ -31,7 +31,7 @@ async fn should_be_able_to_extract_a_web_route_with_axum_path_extractor() {
         path: WebRoute::new("another/route"),
     };
 
-    let test_server = axum_test::TestServer::new(build_router()).unwrap();
+    let test_server = axum_test::TestServer::new(build_router());
 
     // Act
     let response = test_server
