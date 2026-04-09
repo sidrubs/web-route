@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5](https://github.com/sidrubs/web-route/compare/v0.2.4...v0.2.5) - 2026-04-09
+
+### Fixed
+
+- *(deps)* update rust crate fake to v5 ([#26](https://github.com/sidrubs/web-route/pull/26))
+
+### Other
+
+- *(deps)* update rust crate axum-test to v20 ([#27](https://github.com/sidrubs/web-route/pull/27))
+- *(deps)* update actions/checkout action to v6 ([#24](https://github.com/sidrubs/web-route/pull/24))
+- *(deps)* update rust crate axum-test to v18 ([#20](https://github.com/sidrubs/web-route/pull/20))
+- *(deps)* update actions/checkout action to v5 ([#19](https://github.com/sidrubs/web-route/pull/19))
+- Add renovate.json ([#18](https://github.com/sidrubs/web-route/pull/18))
+
 ## [0.2.4](https://github.com/sidrubs/web-route/compare/v0.2.3...v0.2.4) - 2025-07-23
 
 ### Added
