@@ -36,7 +36,7 @@ async fn should_be_able_to_generate_populated_route() {
     // Arrange
     let path_params = Faker.fake::<RouteParams>();
 
-    let test_server = axum_test::TestServer::new(build_router()).unwrap();
+    let test_server = axum_test::TestServer::new(build_router());
 
     // Act
     let response = test_server
