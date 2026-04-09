@@ -101,7 +101,7 @@ impl AsRef<str> for WebRoute {
 
 #[cfg(feature = "fake")]
 impl fake::Dummy<fake::Faker> for WebRoute {
-    fn dummy_with_rng<R: fake::Rng + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
+    fn dummy_with_rng<R: fake::RngExt + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
         use fake::Fake;
 
         let segments: Vec<WebSegment> = config.fake_with_rng(rng);

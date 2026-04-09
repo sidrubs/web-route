@@ -81,7 +81,7 @@ impl ParameterizedRoute {
     ///         param: "value".to_owned(),
     ///     })
     ///     .unwrap();
-    ///     
+    ///
     /// assert_eq!(&web_route.to_string(), "/some/route/value")
     /// ```
     pub fn to_web_route<V: serde::Serialize>(&self, values: &V) -> Result<WebRoute, WebRouteError> {
@@ -134,7 +134,7 @@ impl AsRef<str> for ParameterizedRoute {
 
 #[cfg(feature = "fake")]
 impl fake::Dummy<fake::Faker> for ParameterizedRoute {
-    fn dummy_with_rng<R: fake::Rng + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
+    fn dummy_with_rng<R: fake::RngExt + ?Sized>(config: &fake::Faker, rng: &mut R) -> Self {
         use fake::Fake;
 
         let segments: Vec<ParameterizedSegment> = config.fake_with_rng(rng);
